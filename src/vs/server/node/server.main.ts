@@ -906,7 +906,7 @@ export async function main(options: IServerOptions): Promise<void> {
 		}
 		server.listen(port, '0.0.0.0', () => {
 			const { address, port } = server.address() as net.AddressInfo;
-			logService.info(`Web UI available at           https://${address}:${port}`);
+			logService.info(`Web UI available at http://${address}:${port}`);
 		});
 	});
 }
