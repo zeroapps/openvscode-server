@@ -12,7 +12,7 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { Disposable, DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
 import { Schemas } from 'vs/base/common/network';
 import { isEqual } from 'vs/base/common/resources';
-import { URI } from 'vs/base/common/uri';
+import { URI, UriComponents } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 import { parseLogLevel } from 'vs/platform/log/common/log';
 import product from 'vs/platform/product/common/product';
@@ -21,7 +21,7 @@ import { RemoteAuthorityResolverError, RemoteAuthorityResolverErrorCode } from '
 import { extractLocalHostUriMetaDataForPortMapping, isLocalhost } from 'vs/platform/remote/common/tunnel';
 import { ColorScheme } from 'vs/platform/theme/common/theme';
 import { isFolderToOpen, isWorkspaceToOpen } from 'vs/platform/windows/common/windows';
-import { commands, create, ICommand, ICredentialsProvider, IHomeIndicator, ITunnel, ITunnelProvider, IWorkspace, IWorkspaceProvider } from 'vs/workbench/workbench.web.api';
+import { commands, create, ICommand, ICredentialsProvider, IHomeIndicator, ITunnel, ITunnelProvider, IWorkbenchConstructionOptions, IWorkspace, IWorkspaceProvider } from 'vs/workbench/workbench.web.api';
 
 const loadingGrpc = import('@improbable-eng/grpc-web');
 const loadingLocalApp = (async () => {
@@ -238,6 +238,15 @@ function start(): IDisposable {
 }
 
 async function doStart(): Promise<IDisposable> {
+	// Find config by checking for DOM
+	const configElement = document.getElementById('vscode-workbench-web-configuration');
+	const configElementAttribute = configElement ? configElement.getAttribute('data-settings') : undefined;
+	if (!configElement || !configElementAttribute) {
+		throw new Error('Missing web configuration element');
+	}
+
+	const config: IWorkbenchConstructionOptions & { folderUri?: UriComponents, workspaceUri?: UriComponents } = JSON.parse(configElementAttribute);
+
 	let supervisorHost = window.location.host;
 	// running from sources
 	if (devMode) {
@@ -718,7 +727,8 @@ async function doStart(): Promise<IDisposable> {
 			'workbench.colorTheme': 'Gitpod Light',
 		},
 		developmentOptions: {
-			logLevel: logLevel ? parseLogLevel(logLevel) : undefined
+			logLevel: logLevel ? parseLogLevel(logLevel) : undefined,
+			...config.developmentOptions
 		},
 		credentialsProvider,
 		productConfiguration: {
