@@ -40,7 +40,7 @@ function buildDriver(browser: playwright.Browser, context: playwright.BrowserCon
 		getWindowIds: () => {
 			return Promise.resolve([1]);
 		},
-		capturePage: () => Promise.resolve(''),
+		capturePage: () => page.screenshot().then(buffer => buffer.toString('base64')),
 		reloadWindow: (windowId) => Promise.resolve(),
 		exitApplication: async () => {
 			await context.tracing.stop({ path: join(logsPath, `playwright-trace-${traceCounter++}.zip`) });
@@ -183,26 +183,18 @@ interface Options {
 
 export function connect(options: Options = {}): Promise<{ client: IDisposable, driver: IDriver }> {
 	return new Promise(async (c) => {
-		try {
-			const browser = await playwright[options.browser ?? 'chromium'].launch({ headless: options.headless ?? false });
-			const context = await browser.newContext();
-			await context.tracing.start({ screenshots: true, snapshots: true });
-			const page = await context.newPage();
-			await page.setViewportSize({ width, height });
-			const payloadParam = `[["enableProposedApi",""],["skipWelcome","true"]]`;
-
-
-			const match = /http:\/\/(.*)/.exec(endpoint!);
-			const r = await page.goto(`${endpoint}/?folder=vscode-remote://${match![1]}${URI.file(workspacePath!).path}&payload=${payloadParam}`);
-			console.log(r?.status);
-			const result = {
-				client: { dispose: () => browser.close() && teardown() },
-				driver: buildDriver(browser, context, page)
-			};
-			c(result);
-		}
-		catch (e) {
-			console.log(e);
-		}
+		const browser = await playwright[options.browser ?? 'chromium'].launch({ headless: options.headless ?? false });
+		const context = await browser.newContext();
+		await context.tracing.start({ screenshots: true, snapshots: true });
+		const page = await context.newPage();
+		await page.setViewportSize({ width, height });
+		const payloadParam = `[["enableProposedApi",""],["skipWelcome","true"]]`;
+		const match = /http:\/\/(.*)/.exec(endpoint!);
+		await page.goto(`${endpoint}/?folder=vscode-remote://${match![1]}${URI.file(workspacePath!).path}&payload=${payloadParam}`);
+		const result = {
+			client: { dispose: () => browser.close() && teardown() },
+			driver: buildDriver(browser, context, page)
+		};
+		c(result);
 	});
 }

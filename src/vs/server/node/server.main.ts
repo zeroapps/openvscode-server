@@ -211,23 +211,17 @@ async function handleRoot(req: http.IncomingMessage, resp: http.ServerResponse, 
 
 	const host = req.headers.host;
 
-	let authSession: Object | undefined = undefined;
-	let settingsSyncOptions: Object | undefined = undefined;
-
 	const workbenchConfig = {
 		remoteAuthority: host,
-		// webviewEndpoint: webviewEndpoint,
 		developmentOptions: {
 			enableSmokeTestDriver: environmentService.driverHandle === 'web' ? true : undefined
-		},
-		settingsSyncOptions
+		}
 	};
 
 	const escapeQuote = (str: string) => str.replace(/"/g, '&quot;');
 	const entryPointContent = (await fs.promises.readFile(entryPointPath))
 		.toString()
-		.replace('{{WORKBENCH_WEB_CONFIGURATION}}', escapeQuote(JSON.stringify(workbenchConfig)))
-		.replace('{{WORKBENCH_AUTH_SESSION}}', () => authSession ? escapeQuote(JSON.stringify(authSession)) : '');
+		.replace('{{WORKBENCH_WEB_CONFIGURATION}}', escapeQuote(JSON.stringify(workbenchConfig)));
 
 	resp.writeHead(200, {
 		'Content-Type': 'text/html'
