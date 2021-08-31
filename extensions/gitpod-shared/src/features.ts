@@ -7,7 +7,7 @@
 require('reflect-metadata');
 import { GitpodClient, GitpodServer, GitpodServiceImpl, WorkspaceInstanceUpdateListener } from '@gitpod/gitpod-protocol/lib/gitpod-service';
 import { JsonRpcProxyFactory } from '@gitpod/gitpod-protocol/lib/messaging/proxy-factory';
-import { NavigatorContext, PullRequestContext, User } from '@gitpod/gitpod-protocol/lib/protocol';
+import { /* NavigatorContext, */ PullRequestContext, User } from '@gitpod/gitpod-protocol/lib/protocol';
 import { GitpodHostUrl } from '@gitpod/gitpod-protocol/lib/util/gitpod-host-url';
 import { ControlServiceClient } from '@gitpod/supervisor-api-grpc/lib/control_grpc_pb';
 import { InfoServiceClient } from '@gitpod/supervisor-api-grpc/lib/info_grpc_pb';
@@ -585,14 +585,14 @@ export function registerDefaultLayout(context: GitpodExtensionContext): void {
 			}
 			// TODO gitlab/bitbucket/any other git hoisting?
 
-			if (NavigatorContext.is(workspaceContext)) {
-				const location = vscode.Uri.file(path.join(context.info.getCheckoutLocation(), workspaceContext.path));
-				if (workspaceContext.isFile) {
-					vscode.window.showTextDocument(location);
-				} else {
-					vscode.commands.executeCommand('revealInExplorer', location);
-				}
-			}
+			// if (NavigatorContext.is(workspaceContext)) {
+			// 	const location = vscode.Uri.file(path.join(context.info.getCheckoutLocation(), workspaceContext.path));
+			// 	if (workspaceContext.isFile) {
+			// 		vscode.window.showTextDocument(location);
+			// 	} else {
+			// 		vscode.commands.executeCommand('revealInExplorer', location);
+			// 	}
+			// }
 		})();
 	}
 }

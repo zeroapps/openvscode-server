@@ -27,6 +27,10 @@ import { ThrottledDelayer } from './async';
 
 let gitpodContext: GitpodExtensionContext | undefined;
 export async function activate(context: vscode.ExtensionContext) {
+	// const y = true;
+	// if (y) {
+	// 	return;
+	// }
 	gitpodContext = await shared.createContext(context);
 	if (!gitpodContext) {
 		return;

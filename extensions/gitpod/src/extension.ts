@@ -44,6 +44,10 @@ interface LocalAppInstallation {
 }
 
 export async function activate(context: vscode.ExtensionContext) {
+	// const y = true;
+	// if (y) {
+	// 	return;
+	// }
 	const output = vscode.window.createOutputChannel('Gitpod');
 
 	// TODO(ak) commands to show logs and stop local apps
