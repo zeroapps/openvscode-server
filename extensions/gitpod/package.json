@@ -29,8 +29,17 @@
 	],
 	"activationEvents": [
 		"*",
-		"onCommand:gitpod.api.autoTunnel"
+		"onCommand:gitpod.api.autoTunnel",
+		"onCommand:gitpod.openInGitpod"
 	],
+	"contributes": {
+		"commands": [
+			{
+				"command": "gitpod.openInGitpod",
+				"title": "Open in Gitpod"
+			}
+		]
+	},
 	"main": "./out/extension.js",
 	"scripts": {
 		"compile": "gulp compile-extension:gitpod",

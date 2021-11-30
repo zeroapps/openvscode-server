@@ -16,6 +16,7 @@ import * as tmp from 'tmp';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { grpc } from '@improbable-eng/grpc-web';
+import { GitBaseApi } from './git';
 
 interface SSHConnectionParams {
 	workspaceId: string
@@ -462,6 +463,12 @@ export async function activate(context: vscode.ExtensionContext) {
 		} catch (e) {
 			console.error('failed to disable auto tunneling', e);
 		}
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('gitpod.openInGitpod', () => {
+		const api = GitBaseApi.getAPI();
+		api.repositories.map(r => r.rootUri.toString());
+		console.log(api.repositories);
 	}));
 }
 
