@@ -133,7 +133,7 @@ export async function setupServerServices(connectionToken: ServerConnectionToken
 			disposables.add(toDisposable(() => appInsightsAppender!.flush())); // Ensure the AI appender is disposed so that it flushes remaining data
 		}
 
-		appInsightsAppender = new GitpodInsightsAppender();
+		appInsightsAppender = new GitpodInsightsAppender(productService.nameShort, productService.version);
 
 		// TODO: Useless?
 		// const machineId = await getMachineId();
