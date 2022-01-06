@@ -12,7 +12,7 @@ import { streamToBuffer } from 'vs/base/common/buffer';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Disposable, DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
-import { Schemas } from 'vs/base/common/network';
+import { FileAccess, Schemas } from 'vs/base/common/network';
 import { isEqual } from 'vs/base/common/resources';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -378,9 +378,9 @@ async function doStart(): Promise<IDisposable> {
 
 	const remoteAuthority = window.location.host;
 
-	const wsHostPrefix = !devMode ? info.workspaceId : remoteAuthority.substr(0, remoteAuthority.indexOf('.'));
-	const webEndpointUrlTemplate = `https://extensions-foreign.${info.workspaceClusterHost}/${wsHostPrefix}/static`;
-	const webviewEndpoint = `https://{{uuid}}-webview-foreign.${info.workspaceClusterHost}/${wsHostPrefix}/static/out/vs/workbench/contrib/webview/browser/pre/`;
+	const baseUri = FileAccess.asBrowserUri('', require);
+	const webEndpointUrlTemplate = `${baseUri.scheme}://${baseUri.authority.replace(/^blobserve/, 'blobserve-{{uuid}}')}/${baseUri.path.replace(/^\//, '').replace(/\/out\/$/, '')}`;
+	const webviewEndpoint = `${baseUri.scheme}://${baseUri.authority.replace(/^blobserve/, 'blobserve-{{uuid}}')}/${baseUri.path.replace(/^\//, '').replace(/\/out\/$/, '')}/out/vs/workbench/contrib/webview/browser/pre/`;
 
 	// Find workspace to open and payload
 	let foundWorkspace = false;
