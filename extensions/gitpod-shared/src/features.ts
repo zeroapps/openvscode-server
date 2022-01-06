@@ -711,7 +711,7 @@ export function registerDefaultLayout(context: GitpodExtensionContext): void {
 			const workspaceContext = listener.info.workspace.context;
 
 			if (PullRequestContext.is(workspaceContext) && /github\.com/i.test(context.workspaceContextUrl.authority)) {
-				vscode.commands.executeCommand('github.api.preloadPullRequest');
+				vscode.commands.executeCommand('github.api.preloadPullRequest', true);
 			}
 			// TODO gitlab/bitbucket/any other git hoisting?
 
