@@ -118,14 +118,13 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 			return res.end('OK');
 		}
 
-		if (!httpRequestHasValidConnectionToken(this._connectionToken, req, parsedUrl)) {
-			// invalid connection token
-			return serveError(req, res, 403, `Forbidden.`);
-		}
-
 		if (pathname === '/vscode-remote-resource') {
 			// Handle HTTP requests for resources rendered in the rich client (images, fonts, etc.)
 			// These resources could be files shipped with extensions or even workspace files.
+			if (!httpRequestHasValidConnectionToken(this._connectionToken, req, parsedUrl)) {
+				// invalid connection token
+				return serveError(req, res, 403, `Forbidden.`);
+			}
 			const desiredPath = parsedUrl.query['path'];
 			if (typeof desiredPath !== 'string') {
 				return serveError(req, res, 400, `Bad request.`);
