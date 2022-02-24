@@ -32,7 +32,6 @@ import { Promises } from 'vs/base/node/pfs';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { ServerConnectionToken, ServerConnectionTokenType } from 'vs/server/node/serverConnectionToken';
 import { IRequestService } from 'vs/platform/request/common/request';
-import { getInitialExtensionsToInstall } from 'vs/gitpod/node/customServerIntegration';
 
 let _SystemExtensionsRoot: string | null = null;
 function getSystemExtensionsRoot(): string {
@@ -96,12 +95,6 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 				});
 		}
 
-		this.whenExtensionsReady.then(() => getInitialExtensionsToInstall(logService, requestService).then(extToInstall => {
-			const idsOrVSIX = extToInstall.map(input => /\.vsix$/i.test(input) ? URI.file(input) : input);
-			return idsOrVSIX.length ? extensionManagementCLIService.installExtensions(idsOrVSIX, [],  { isMachineScoped: true }, false) : undefined;
-		})).then(null, error => {
-			logService.error(error);
-		});
 	}
 
 	async call(_: any, command: string, arg?: any): Promise<any> {
